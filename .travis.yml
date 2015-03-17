@@ -2,5 +2,4 @@
 language: cpp
 before_install:
   - sudo apt-get update -qq
-  - yes | sudo apt-get upgrade cmake
-  - sudo apt-get install libhdf5-openmpi-dev libopenmpi-dev -y
+  - sudo apt-get install cmake libhdf5-openmpi-dev libopenmpi-dev -y
