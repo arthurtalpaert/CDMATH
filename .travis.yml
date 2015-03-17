@@ -1,2 +1,5 @@
 # This is the configuration file for Travis CI, an online continuous integration service.
 language: cpp
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -y libhdf5-dev libopenmpi-dev
