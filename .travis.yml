@@ -2,4 +2,4 @@
 language: cpp
 before_install:
   - sudo apt-get update -qq
-  - sudo apt-get install -y libhdf5-dev libopenmpi-dev
+  - sudo apt-get install -y libhdf5-openmpi-dev libopenmpi-dev
