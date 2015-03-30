@@ -36,7 +36,7 @@ install:
   - cd build
   - cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release -DCDMATH_WITH_TESTS=ON ..
   - make
-  - sudo make install
+  - sudo make install -j --silent
   - cd ..
   
 script:
