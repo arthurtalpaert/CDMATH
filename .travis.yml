@@ -17,6 +17,7 @@ before_install:
   - wget http://www.cmake.org/files/v3.2/cmake-3.2.1-Linux-x86_64.tar.gz
   - tar -zxf cmake-3.2.1-Linux-x86_64.tar.gz
   - alias cmake='cmake-3.2.1-Linux-x86_64/bin/cmake'
+  - cmake --version
   # Installation of newer version of HDF5
   #- wget http://www.hdfgroup.org/ftp/HDF5/current/src/hdf5-1.8.14.tar.gz
   #- tar -zxf hdf5-1.8.14.tar.gz
@@ -39,7 +40,7 @@ install:
   - mkdir build
   - cd build
   - cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release -DCDMATH_WITH_TESTS=ON -MEDFILE_USE_MPI=ON ..
-  - make -j
+  - make
   - sudo make install -j --silent
   - cd ..
   
