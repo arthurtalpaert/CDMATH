@@ -32,15 +32,15 @@ before_install:
   - cd ..
   
 install:
+  - export MPI_ROOT_DIR=/usr/local/lib/openmpi
   - mkdir build
   - cd build
-  - cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release -DCDMATH_WITH_TESTS=ON ..
+  - cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release -DCDMATH_WITH_TESTS=ON -MEDFILE_USE_MPI=ON ..
   - make
   - sudo make install -j --silent
   - cd ..
   
 script:
-  - export LD_LIBRARY_PATH=/usr/local/lib/openmpi
   - cd build
   - make test
   - cd ..
