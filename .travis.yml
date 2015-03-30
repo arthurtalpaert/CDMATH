@@ -29,3 +29,5 @@ before_install:
   - make -j$NUM_THREADS --silent
   - sudo make install -j --silent
   - cd ..
+  # CMake with tests
+  - cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release -DCDMATH_WITH_TESTS=ON
