@@ -23,20 +23,20 @@ before_install:
   - sudo make install -j --silent
   - cd ..
   # Installation of newer version of OpenMPI
-  - wget http://www.open-mpi.org/software/ompi/v1.8/downloads/openmpi-1.8.4.tar.gz
-  - tar -zxf openmpi-1.8.4.tar.gz
-  - cd openmpi-1.8.4
-  - ./configure
-  - make -j$NUM_THREADS --silent
-  - sudo make install -j --silent
-  - cd ..
+  #- wget http://www.open-mpi.org/software/ompi/v1.8/downloads/openmpi-1.8.4.tar.gz
+  #- tar -zxf openmpi-1.8.4.tar.gz
+  #- cd openmpi-1.8.4
+  #- ./configure
+  #- make -j$NUM_THREADS --silent
+  #- sudo make install -j --silent
+  #- cd ..
   
 install:
-  - export MPI_ROOT_DIR=/usr/local/lib/openmpi
+  #- export MPI_ROOT_DIR=/usr/local/lib/openmpi
   - mkdir build
   - cd build
   - cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release -DCDMATH_WITH_TESTS=ON -MEDFILE_USE_MPI=ON ..
-  - make
+  - make -j
   - sudo make install -j --silent
   - cd ..
   
