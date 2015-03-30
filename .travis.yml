@@ -1,5 +1,6 @@
 # This is the configuration file for Travis CI, an online continuous integration service.
 language: cpp
+
 before_install:
   - export NUM_THREADS=1
   # Installation of dependencies
@@ -29,5 +30,16 @@ before_install:
   - make -j$NUM_THREADS --silent
   - sudo make install -j --silent
   - cd ..
-  # CMake with tests
+  
+install:
+  - mkdir build
+  - cd build
   - cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release -DCDMATH_WITH_TESTS=ON
+  - make
+  - sudo make install
+  - cd ..
+  
+script:
+  - cd build
+  - make test
+  - cd ..
