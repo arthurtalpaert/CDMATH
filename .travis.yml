@@ -40,7 +40,7 @@ install:
   - cd ..
   
 script:
-  - export LD_LIBRARY_PATH=/usr/cdmath/lib
+  - export LD_LIBRARY_PATH=/usr/local/lib/openmpi
   - cd build
   - make test
   - cd ..
