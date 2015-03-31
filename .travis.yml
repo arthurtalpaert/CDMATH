@@ -28,7 +28,7 @@ before_install:
   - cd ..
   
 install:
-  - export MPI_ROOT_DIR=/usr/local/lib/openmpi
+  - export MPI_ROOT_DIR=/usr/local/
   - mkdir build
   - cd build
   - ../cmake-3.2.1-Linux-x86_64/bin/cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release -DCDMATH_WITH_TESTS=ON -DMEDFILE_USE_MPI=ON ..
