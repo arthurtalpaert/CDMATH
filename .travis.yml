@@ -1,5 +1,16 @@
 # This is the configuration file for Travis CI, an online continuous integration service.
 language: cpp
+sudo: required
+dist: trusty
+addons:
+  apt:
+    packages:
+    - cmake
+    - g++
+    - libhdf5-dev
+    - libopenmpi-dev
+    - petsc-dev
+    - libcppunit-dev
 
 before_install:
   - export NUM_THREADS=1
