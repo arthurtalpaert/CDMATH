@@ -40,7 +40,7 @@ install:
   - export MPI_ROOT_DIR=/usr/local/share/openmpi
   - mkdir build
   - cd build
-  - ../cmake-3.3.2-Linux-x86_64/bin/cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release -DCDMATH_WITH_TESTS=ON -DCDMATH_WITH_PETSC=ON -DMPI_ROOT_DIR=$MPI_ROOT_DIR -DMEDFILE_USE_MPI=ON ..
+  - ../cmake-3.3.2-Linux-x86_64/bin/cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release  -DMEDFILE_USE_MPI=ON -DMPI_ROOT_DIR=$MPI_ROOT_DIR -DCDMATH_WITH_TESTS=ON -DCDMATH_WITH_PETSC=ON ..
   - make
   - sudo make install -j --silent
   - cd ..
