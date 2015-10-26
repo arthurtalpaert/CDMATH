@@ -6,7 +6,6 @@ addons:
   apt:
     packages:
     - cmake
-    - g++
     - libhdf5-dev
     - libopenmpi-dev
     - petsc-dev
