@@ -39,13 +39,13 @@ before_install:
   - ls -l /usr/include/*mpi*
   - ls -l /usr/include/mpi/
   - ls -l /usr/include/openmpi/
+  - sudo ln -s /usr/include/mpi/mpi.h /usr/include/mpi.h
   
 install:
   #- export MPI_ROOT_DIR=/usr/local/share/mpi
-  - export MPI_ROOT_DIR=/usr/lib/openmpi
   - mkdir build
   - cd build
-  - cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release -DMEDFILE_USE_MPI=ON -DCDMATH_WITH_TESTS=ON -DCDMATH_WITH_PETSC=ON ..
+  - cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release -DCDMATH_WITH_TESTS=ON -DCDMATH_WITH_PETSC=ON ..
   - make
   - sudo make install -j --silent
   - cd ..
