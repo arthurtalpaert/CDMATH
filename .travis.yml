@@ -46,12 +46,15 @@ before_install:
   - sudo ln -s /mpi/mpif-mpi-io.h /usr/include/mpif-mpi-io.h
   - sudo ln -s /mpi/mpi.h /usr/include/mpi.h
   - sudo ln -s /mpi/mpi_portable_platform.h /usr/include/mpi_portable_platform.h
+  - ls -l /usr/include/*mpi*
+  - ls -l /usr/include/mpi/
+  - ls -l /usr/include/openmpi/
   
 install:
   #- export MPI_ROOT_DIR=/usr/local/share/mpi
   - mkdir build
   - cd build
-  - cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release -DCDMATH_WITH_TESTS=ON -DCDMATH_WITH_PETSC=ON ..
+  - cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release -DMEDFILE_USE_MPI=ON -DCDMATH_WITH_TESTS=ON -DCDMATH_WITH_PETSC=ON ..
   - make
   - sudo make install -j --silent
   - cd ..
