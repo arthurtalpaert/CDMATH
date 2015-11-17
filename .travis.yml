@@ -39,14 +39,13 @@ before_install:
   - ls -l /usr/include/*mpi*
   - ls -l /usr/include/mpi/
   - ls -l /usr/include/openmpi/
-  - cd /usr/include
-  - sudo ln -s /mpi/mpi-ext.h
-  - sudo ln -s /mpi/mpif-common.h
-  - sudo ln -s /mpi/mpif-config.h
-  - sudo ln -s /mpi/mpif.h
-  - sudo ln -s /mpi/mpif-mpi-io.h
-  - sudo ln -s /mpi/mpi.h
-  - sudo ln -s /mpi/mpi_portable_platform.h
+  - sudo ln -s /mpi/mpi-ext.h /usr/include
+  - sudo ln -s /mpi/mpif-common.h /usr/include
+  - sudo ln -s /mpi/mpif-config.h /usr/include
+  - sudo ln -s /mpi/mpif.h /usr/include
+  - sudo ln -s /mpi/mpif-mpi-io.h /usr/include
+  - sudo ln -s /mpi/mpi.h /usr/include
+  - sudo ln -s /mpi/mpi_portable_platform.h /usr/include
   
 install:
   #- export MPI_ROOT_DIR=/usr/local/share/mpi
