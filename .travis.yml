@@ -36,7 +36,8 @@ before_install:
   #- make -j$NUM_THREADS --silent
   #- sudo make install -j --silent
   #- cd ..
-  - ls /usr/include/mpi
+  - ls -l /usr/include/*mpi*
+  - ls -l /usr/include/mpi/
   
 install:
   #- export MPI_ROOT_DIR=/usr/local/share/openmpi
