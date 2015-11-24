@@ -6,6 +6,7 @@
  */
 
 #include "Cell.hxx"
+#include "CdmathException.hxx"
 
 #include <assert.h>
 
@@ -27,7 +28,7 @@ Cell::Cell( int numberOfNodes, int numberOfFaces, double measure, const Point p 
 	_numberOfFaces    = numberOfFaces ;
 	_nodesId = IntTab(_numberOfNodes,0);
 	_facesId = IntTab(_numberOfFaces,0);
-	_normalVectors = Vector(2*_numberOfFaces);
+	_normalVectors = Vector(3*_numberOfFaces);
 	_measure = measure ;
 }
 
@@ -137,8 +138,9 @@ void
 Cell::addNormalVector (int numNormalVector, double x, double y, double z)
 //----------------------------------------------------------------------
 {
-	_normalVectors(2*numNormalVector) = x ;
-	_normalVectors(2*numNormalVector+1) = y ;
+	_normalVectors(3*numNormalVector) = x ;
+	_normalVectors(3*numNormalVector+1) = y ;
+	_normalVectors(3*numNormalVector+2) = z ;
 }
 
 //----------------------------------------------------------------------
@@ -147,14 +149,13 @@ Cell::getNormalVector( int numNormalVector, int numComposant ) const
 //----------------------------------------------------------------------
 {
 	if (numComposant==0)
-		return _normalVectors(2*numNormalVector);
+		return _normalVectors(3*numNormalVector);
 	else if (numComposant==1)
-		return _normalVectors(2*numNormalVector+1);
+		return _normalVectors(3*numNormalVector+1);
+	else if (numComposant==2)
+		return _normalVectors(3*numNormalVector+2);
 	else
-	{
-		assert("Error : error dans getNormalVector");
-		return 1.E30;
-	}
+		throw CdmathException("Cell::getNormalVector, numComposant should be 0, 1 or 2");
 }
 
 //----------------------------------------------------------------------

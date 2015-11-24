@@ -11,7 +11,7 @@ addons:
     - libcppunit-dev
 
 before_install:
-  - export NUM_THREADS=1
+  #- export NUM_THREADS=1
   ## Installation of a newer version of CMake
   #- wget https://cmake.org/files/v3.3/cmake-3.3.2-Linux-x86_64.tar.gz --no-check-certificate
   #- tar -zxf cmake-3.3.2-Linux-x86_64.tar.gz

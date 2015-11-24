@@ -2,8 +2,8 @@ cmake_minimum_required (VERSION 2.8)
 
 # Project name
 project (CDMATH)
-set (CDMATH_VERSION_MAJOR 0)
-set (CDMATH_VERSION_MINOR 2)
+set (CDMATH_VERSION_MAJOR 1)
+set (CDMATH_VERSION_MINOR 0)
 
 # Project options
 option (CDMATH_WITH_PETSC "Compile CDMATH with PETSc linking." OFF)
@@ -34,6 +34,7 @@ set (MED3_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/pre_requis/MEDFile/include ${
 set (MED3_LIB ${CMAKE_CURRENT_BINARY_DIR}/pre_requis/MEDFile/src/libmedC.so)
 set (MED3_LIBS ${MED3_LIB})
 
+# HDF5
 find_package (HDF5 REQUIRED)
 set (CPACK_DEBIAN_PACKAGE_DEPENDS "libhdf5-dev")
 set (CPACK_RPM_PACKAGE_REQUIRES "hdf5-devel")

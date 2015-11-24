@@ -12,9 +12,8 @@
 #include <petscmat.h>
 #include <petscksp.h>
 
-#include "LinearSolver.hxx"
 #include "CdmathException.hxx"
-
+#include "LinearSolver.hxx"
 #include "SparseMatrix.hxx"
 
 using namespace std;
@@ -34,6 +33,34 @@ LinearSolver::LinearSolver ( void )
     _smb=NULL;
     _ksp=NULL;
     _prec=NULL;
+    _isSparseMatrix=false;
+}
+
+void
+LinearSolver::kspDuplicate(const KSP source, const Mat mat, KSP* destination) const
+{
+    KSPCreate(PETSC_COMM_WORLD,&(*destination));
+    KSPSetOperators(*destination,mat,mat,SAME_NONZERO_PATTERN);
+    // If Petsc is 3.5 or higher:
+    //KSPSetOperators(destination,mat,mat);
+    KSPType type;
+    KSPGetType(source,&type);
+    KSPSetType(*destination,type);
+	/*
+    PetscReal tol1,tol2,tol3;
+    PetscInt maxIter;
+    KSPGetTolerances(source,&tol1,&tol2,&tol3,&maxIter);
+    KSPSetTolerances(*destination,tol1,tol2,tol3,maxIter);
+	//*/
+}
+
+void
+LinearSolver::precDuplicate(const PC source, const KSP ksp, PC* destination)  const
+{
+	KSPGetPC(ksp,destination);
+    PCType type;
+    PCGetType(source,&type);
+    PCSetType(*destination,type);
 }
 
 LinearSolver::~LinearSolver ( void )
@@ -61,35 +88,52 @@ LinearSolver::setNumberMaxOfIter(int numberMaxOfIter)
 LinearSolver::LinearSolver( const GenericMatrix& matrix, const Vector& vector, int numberMaxOfIter, double tol, std::string nameOfMethod )
 {
     _tol=tol;
-    _nameOfMethod=nameOfMethod;
+	/*
+	_tol=0.;
+    setTolerance(tol);
+	//*/
     _numberMaxOfIter=numberMaxOfIter;
+	/*
+	_numberMaxOfIter=0;
+    setNumberMaxOfIter(numberMaxOfIter);
+	//*/
     _residu=1.E30;
     _convergence=false;
     _numberOfIter=0;
     _isSingular=false;
+    _isSparseMatrix=matrix.isSparseMatrix();
+    setMethod(nameOfMethod);
     _nameOfPc="";
     setLinearSolver(matrix,vector);
 }
 
-LinearSolver::LinearSolver( const GenericMatrix& matrix, const Vector& vector, int numberMaxOfIter, double tol, std::string nameOfMethod, std::string pc )
+void
+LinearSolver::setPreconditioner(std::string pc)
 {
-    _tol=tol;
-    _nameOfMethod=nameOfMethod;
-    _nameOfPc=pc;
-    _numberMaxOfIter=numberMaxOfIter;
-    _residu=1.E30;
-    _convergence=false;
-    _numberOfIter=0;
-    _isSingular=false;
-
-    if ((_nameOfPc.compare("LU")==0 && (_nameOfMethod.compare("GMRES")!=0 && _nameOfMethod.compare("BICG")!=0)))
+    if ((pc.compare("ILU") != 0) && (pc.compare("") != 0))
     {
-        string msg="LinearSolver::LinearSolver : preconditioner "+_nameOfPc+" is not yet implemented.\n";
-        msg+="The preconditioners implemented are : LU for GMRES and BICG methods.";
+        string msg="LinearSolver::LinearSolver : preconditioner "+pc+" does not exist.\n";
+        throw CdmathException(msg);
+    }
+    if (pc.compare("ILU")==0 && _isSparseMatrix==false)
+    {
+        string msg="LinearSolver::LinearSolver : preconditioner "+pc+" is not compatible with dense matrix.\n";
         throw CdmathException(msg);
     }
 
-    if (_nameOfPc.compare("ILU")==0 && matrix.isSparseMatrix()==false)
+    if (pc.compare("ILU")==0 && _nameOfMethod.compare("CHOLESKY")==0 )
+    {
+        string msg="LinearSolver::LinearSolver : preconditioner "+pc+" is not compatible with "+_nameOfMethod+".\n";
+        throw CdmathException(msg);
+    }
+    _nameOfPc=pc;
+}
+
+void
+LinearSolver::setMethod(std::string nameOfMethod)
+{
+    _nameOfMethod=nameOfMethod;
+    if (_nameOfPc.compare("ILU")==0 && _isSparseMatrix==false)
     {
         string msg="LinearSolver::LinearSolver : preconditioner "+_nameOfPc+" is not compatible with dense matrix.\n";
         throw CdmathException(msg);
@@ -101,16 +145,50 @@ LinearSolver::LinearSolver( const GenericMatrix& matrix, const Vector& vector, i
         throw CdmathException(msg);
     }
 
+}
+
+LinearSolver::LinearSolver( const GenericMatrix& matrix, const Vector& vector, int numberMaxOfIter, double tol, std::string nameOfMethod, std::string pc )
+{
+    _tol=tol;
+	/*
+	_tol=0.;
+    setTolerance(tol);
+	//*/
+    _numberMaxOfIter=numberMaxOfIter;
+	/*
+	_numberMaxOfIter=0;
+    setNumberMaxOfIter(numberMaxOfIter);
+	//*/
+    _residu=1.E30;
+    _convergence=false;
+    _numberOfIter=0;
+    _isSingular=false;
+    _isSparseMatrix=matrix.isSparseMatrix();
+    setMethod(nameOfMethod);
+    _nameOfPc="";
+    setPreconditioner(pc);
     setLinearSolver(matrix,vector);
 }
 
 void
 LinearSolver::setLinearSolver(const GenericMatrix& matrix, const Vector& vector)
 {
+    if (_nameOfPc.compare("ILU")==0 && _isSparseMatrix==false)
+    {
+        string msg="LinearSolver::LinearSolver : preconditioner "+_nameOfPc+" is not compatible with dense matrix.\n";
+        throw CdmathException(msg);
+    }
+
     PetscInitialize(0,(char ***)"", PETSC_NULL, PETSC_NULL);
     setMatrix(matrix);
     setSndMember(vector);
+}
 
+
+bool
+LinearSolver::isSparseMatrix( void ) const
+{
+    return _isSparseMatrix;
 }
 
 bool
@@ -251,10 +329,17 @@ LinearSolver::LinearSolver ( const LinearSolver& LS )
     _numberOfIter=LS.getNumberOfIter();
     _isSingular=LS.isSingular();
     _nameOfPc=LS.getNameOfPc();
-    _mat=LS.getPetscMatrix();
-    _smb=LS.getPetscVector();
-    _ksp=LS.getPetscKsp();
-    _prec=LS.getPetscPc();
+    _mat=NULL;
+    MatDuplicate(LS.getPetscMatrix(),MAT_COPY_VALUES,&_mat);
+    _smb=NULL;
+    VecDuplicate(LS.getPetscVector(),&_smb);    				;
+    _ksp=NULL;
+    kspDuplicate(LS.getPetscKsp(),_mat,&_ksp);
+    _prec=NULL;
+    precDuplicate(LS.getPetscPc(),_ksp,&_prec);
+//    _ksp=LS.getPetscKsp();
+//    _prec=LS.getPetscPc();
+    _isSparseMatrix=LS.isSparseMatrix();
 }
 
 KSP
@@ -287,13 +372,8 @@ LinearSolver::solve( void )
 
     PetscInitialize(0,(char ***)"", PETSC_NULL, PETSC_NULL);
 
-
-
     if (_nameOfMethod.compare("GMRES")==0)
-    {
        KSPSetType(_ksp,KSPGMRES);
-       if (_nameOfPc.compare("LU")==0) PCSetType(_prec,PCLU);
-    }
     else if (_nameOfMethod.compare("LGMRES")==0)
         KSPSetType(_ksp,KSPLGMRES);
     else if (_nameOfMethod.compare("CG")==0)
@@ -305,10 +385,7 @@ LinearSolver::solve( void )
     else if (_nameOfMethod.compare("CGS")==0)
         KSPSetType(_ksp,KSPCGS);
     else if (_nameOfMethod.compare("BICG")==0)
-    {
         KSPSetType(_ksp,KSPBICG);
-        if (_nameOfPc.compare("LU")==0) PCSetType(_prec,PCLU);
-    }
     else if (_nameOfMethod.compare("GCR")==0)
         KSPSetType(_ksp,KSPGCR);
     else if (_nameOfMethod.compare("LSQR")==0)
@@ -325,7 +402,7 @@ LinearSolver::solve( void )
         throw CdmathException(msg);
     }
 
-   if (_nameOfPc.compare("ILU")==0 && (_nameOfMethod.compare("LU")!=0 && _nameOfMethod.compare("CHOLESKY")!=0) ) PCSetType(_prec,PCILU);
+   if (_nameOfPc.compare("ILU")==0) PCSetType(_prec,PCILU);
 
     PetscInt its;
     PetscReal rtol,abstol,dtol;
@@ -414,10 +491,17 @@ LinearSolver::operator= ( const LinearSolver& linearSolver )
     _numberOfIter=linearSolver.getNumberOfIter();
     _isSingular=linearSolver.isSingular();
     _vector=linearSolver.getSndMember();
-    _nameOfPc=linearSolver.getNameOfPc();
-    _mat=linearSolver.getPetscMatrix();
-    _smb=linearSolver.getPetscVector();
-    _ksp=linearSolver.getPetscKsp();
-    _prec=linearSolver.getPetscPc();
+    _isSparseMatrix=linearSolver.isSparseMatrix();
+    _nameOfPc="";
+    setPreconditioner(linearSolver.getNameOfPc());
+    _mat=NULL;
+    MatDuplicate(linearSolver.getPetscMatrix(),MAT_COPY_VALUES,&_mat);
+    _smb=NULL;
+    VecDuplicate(linearSolver.getPetscVector(),&_smb);    				;
+    _ksp=NULL;
+    kspDuplicate(linearSolver.getPetscKsp(),_mat,&_ksp);
+    _prec=NULL;
+    precDuplicate(linearSolver.getPetscPc(),_ksp,&_prec);
     return *this;
 }
+

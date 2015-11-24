@@ -30,6 +30,10 @@ class LinearSolver
 
 	LinearSolver ( const LinearSolver& LS ) ;
 
+        void setMethod(std::string nameOfMethod) ;
+
+        void setPreconditioner(std::string pc) ;
+
 	int getNumberOfIter( void ) const ;
 
 	bool getStatus( void ) const ;
@@ -64,8 +68,15 @@ class LinearSolver
 
 	bool isSingular( void ) const;
 
+        bool isSparseMatrix( void ) const ;
+
 	Mat getPetscMatrix() const ;
 	Vec getPetscVector() const ;
+
+	void kspDuplicate(const KSP source, const Mat mat, KSP* destination) const;
+
+	void precDuplicate(const PC source, const KSP ksp, PC* destination) const;
+
 
     private: //----------------------------------------------------------------
 
@@ -80,6 +91,7 @@ class LinearSolver
 	double _residu;
 	bool _convergence;
 	bool _isSingular;
+    bool _isSparseMatrix;
 	int _numberOfIter;
 //	GenericMatrix* _matrix;
 	Vector _vector;
